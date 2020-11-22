@@ -187,4 +187,3 @@ void drawWin() {
     state=playState;
   }
 }
-// Just a test
