@@ -18,11 +18,15 @@ final int distansMellanrum = 20;
 final int distansTot = distansLangd+distansMellanrum;
 int state = startState;
 
+// Användarfel
+boolean gissatRatt=false;
+int felGissningar = 0;
+
 //Färger
-final color rod = color(255,0,0);
-final color gron = color(0,255,0);
-final color bla = color(0,0,255);
-final color turkos = color(0,255,255);
+final color rod = color(255, 0, 0);
+final color gron = color(0, 255, 0);
+final color bla = color(0, 0, 255);
+final color turkos = color(0, 255, 255);
 final color svart = color(0);
 // Images
 PImage hill;
@@ -36,7 +40,7 @@ void setup() {
   rValInt = int(random(0, antalOrd));
   rVal = ord[rValInt];
   println(rVal);
-  
+
   rectMode(CENTER);
   // Kolla ifall ordet är udda eller jämnt antal karaktärer
   if (rVal.length() % 2 == 0) {
@@ -47,11 +51,11 @@ void setup() {
     mittenBokstav = int(rVal.length()/2)+1;
   }
   println(mittenBokstav);
-  
+
   // Images
   hill = loadImage("hill.png");
   sun = loadImage("sun.png");
-  sun.resize(120,101);
+  sun.resize(120, 101);
   sky = loadImage("sky.png");
 }
 
@@ -126,8 +130,8 @@ void drawStart() {
 void drawPlay() {
   background(gron);
   //image(sky,0,0);
-  image(hill,(width/2)-512/2,200);
-  image(sun,width-120,0);
+  image(hill, (width/2)-512/2, 200);
+  image(sun, width-120, 0);
   noStroke();
   fill(rod);
   drawUnderstrack();
@@ -135,26 +139,31 @@ void drawPlay() {
   //Hämta in det hemliga ordet som en array med en bokstav i varje plats.
   String[] secretWordArray = divideWord(rVal);
   println("NUMMER 3: "+secretWordArray[2]);
-  
+
   // ANTECKNING TILL MIG SJÄLV
   // Fixa så att det inte blir NullPointerException error när man trycker på cancel. 
   anvandarValStr = JOptionPane.showInputDialog("Skriv en bokstav");
   anvandarVal = anvandarValStr.toUpperCase().charAt(0);
-  
+
   // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
   for (int i=0; i < rVal.length(); i++) {
     if (secretWordArray[i].charAt(0) == anvandarVal && harBilvitTaget[i] == false) {
       println(i);
       harBilvitTaget[i] = true;
+      gissatRatt=true;
     }
   }
   
+  if(gissatRatt == false){
+    felGissningar +=1;  
+  }
+
   // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet. 
   int[] understrackKordinater = PositionOfLetter();
-  for(int i=0; i < rVal.length(); i++){
-     if(harBilvitTaget[i]){
-        text(""+secretWordArray[i],float(understrackKordinater[i]),(height/4.0)*3-height*0.02125);
-     }
+  for (int i=0; i < rVal.length(); i++) {
+    if (harBilvitTaget[i]) {
+      text(""+secretWordArray[i], float(understrackKordinater[i]), (height/4.0)*3-height*0.02125);
+    }
   }
 }
 
