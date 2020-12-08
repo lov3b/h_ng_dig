@@ -18,6 +18,12 @@ final int distansMellanrum = 20;
 final int distansTot = distansLangd+distansMellanrum;
 int state = startState;
 
+//Färger
+final color rod = color(255,0,0);
+final color gron = color(0,255,0);
+final color bla = color(0,0,255);
+final color turkos = color(0,255,255);
+final color svart = color(0);
 // Images
 PImage hill;
 PImage sun;
@@ -26,13 +32,13 @@ PImage sky;
 void setup() {
   size(800, 800);
   surface.setTitle("Häng Dig!");
+  //Bestäm ett slumpmässigt ord från ordarrayen
   rValInt = int(random(0, antalOrd));
-  //TEST
-  //rValInt = 1;
   rVal = ord[rValInt];
   println(rVal);
+  
   rectMode(CENTER);
-
+  // Kolla ifall ordet är udda eller jämnt antal karaktärer
   if (rVal.length() % 2 == 0) {
     rValUdda = false;
     mittenBokstav = rVal.length()/2;
@@ -49,34 +55,21 @@ void setup() {
   sky = loadImage("sky.png");
 }
 
-
-// Fixa så att rektangeln ligger i centrum av den inmatade kordinaten
-//int rectAlign(int input) {
-//  int output=input-(distansLangd/2);
-//  return output;
-//}
-
-// Divide word into single letters in an array.
+// Dela det valda ordet in till enstaka bokstaver i en array.
 String[] divideWord(String wordToDivide) {
   String[] ret = wordToDivide.split("");
   return ret;
 }
 
-
-// CURENT VERSION OF POSITONOFLETTER
+// Återvänder en array där "understräcken" ska vara för det hemliga ordet
 int[] PositionOfLetter() {
-  //String[] secretWordArrayFunction = divideWord(rVal);
   int antalBokstaver = rVal.length();
-
   int[] kordinaterForUnderstrack = new int[antalBokstaver];
-
   int mitten = (width/2);
   if (rValUdda) {
     kordinaterForUnderstrack[mittenBokstav-1] = mitten;
-    //println("test: "+ str(mitten-(distansLangd/2)));
     println("test: "+ str(kordinaterForUnderstrack[mittenBokstav]));
     for (int i=1; i < mittenBokstav; i++) {
-
       kordinaterForUnderstrack[(mittenBokstav -1 - i)] = mitten-distansTot*i;
       kordinaterForUnderstrack[(mittenBokstav -1 + i)] = mitten+distansTot*i;
     }
@@ -84,16 +77,14 @@ int[] PositionOfLetter() {
     for (int i=0; i < mittenBokstav; i++) {
       kordinaterForUnderstrack[mittenBokstav-1-i] = mitten-(distansTot/2)-(distansTot*i);
       kordinaterForUnderstrack[mittenBokstav+i] = mitten+(distansTot/2)+(distansTot*i);
-      // TEST för utskrivning av bokstäver 
-      //text("K", 375, (height/4)*3-20);
     }
   }
   //println(kordinaterForUnderstrack);
   return kordinaterForUnderstrack;
 }
 
-
 void draw() {
+  // Ett switch statement som gör det möjligt med olika playstates. 
   switch(state) {
   case startState:
     drawStart();
@@ -110,6 +101,7 @@ void draw() {
   }
 }
 
+// Funktion för att skriva ut understräcken
 void drawUnderstrack() {
   int[] understrackKordinat = PositionOfLetter();
   for (int i=0; i < rVal.length(); i++) {
@@ -118,57 +110,58 @@ void drawUnderstrack() {
   }
 }
 
+
 void drawStart() {
   textSize(20);
   textAlign(CENTER, CENTER);
   background(0);
-  fill(0, 255, 0);
+  fill(gron);
   text("Välkommen till 'Häng Dig'\nGissa på en bokstav i popuprutan\n"+
     "Starta genom att klicka på fönstret eller tryck på valfri tangent", width/2, height/2);
+  // Byt playstate ifall en knapp trycks ner
   if (mousePressed||keyPressed) {
     state=playState;
   }
 }
 void drawPlay() {
-  background(0,255,0);
+  background(gron);
   //image(sky,0,0);
   image(hill,(width/2)-512/2,200);
   image(sun,width-120,0);
   noStroke();
-  fill(255, 0, 0);
+  fill(rod);
   drawUnderstrack();
   println(PositionOfLetter());
+  //Hämta in det hemliga ordet som en array med en bokstav i varje plats.
   String[] secretWordArray = divideWord(rVal);
   println("NUMMER 3: "+secretWordArray[2]);
-   anvandarValStr = JOptionPane.showInputDialog("Skriv en bokstav");
-
+  
+  // ANTECKNING TILL MIG SJÄLV
+  // Fixa så att det inte blir NullPointerException error när man trycker på cancel. 
+  anvandarValStr = JOptionPane.showInputDialog("Skriv en bokstav");
   anvandarVal = anvandarValStr.toUpperCase().charAt(0);
+  
+  // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
   for (int i=0; i < rVal.length(); i++) {
-    //println("Använderval: " +"." +anvandarVal+".");
-    //println("Hemliga ordet: " + "."+secretWordArray[i]+".");
-
-
     if (secretWordArray[i].charAt(0) == anvandarVal && harBilvitTaget[i] == false) {
       println(i);
       harBilvitTaget[i] = true;
-      
     }
   }
+  
+  // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet. 
   int[] understrackKordinater = PositionOfLetter();
   for(int i=0; i < rVal.length(); i++){
      if(harBilvitTaget[i]){
         text(""+secretWordArray[i],float(understrackKordinater[i]),(height/4.0)*3-height*0.02125);
      }
-     
   }
-  
 }
 
 void drawGameover() {
-  background(255, 0, 0);
+  background(rod);
   textSize(20);
   textAlign(CENTER, CENTER);
-  background(0);
   text("GAME OVER!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height/2);
   if (mousePressed||keyPressed) {
@@ -177,10 +170,9 @@ void drawGameover() {
 }
 
 void drawWin() {
-  background(0, 255, 255);
+  background(turkos);
   textSize(20);
   textAlign(CENTER, CENTER);
-  background(0);
   text("Du vann!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height/2);
   if (mousePressed||keyPressed) {
