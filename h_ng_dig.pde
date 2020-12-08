@@ -28,6 +28,7 @@ final color gron = color(0, 255, 0);
 final color bla = color(0, 0, 255);
 final color turkos = color(0, 255, 255);
 final color svart = color(0);
+
 // Images
 PImage hill;
 PImage sun;
@@ -153,9 +154,9 @@ void drawPlay() {
       gissatRatt=true;
     }
   }
-  
-  if(gissatRatt == false){
-    felGissningar +=1;  
+
+  if (gissatRatt == false) {
+    felGissningar +=1;
   }
 
   // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet. 
