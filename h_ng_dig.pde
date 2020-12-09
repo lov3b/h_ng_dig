@@ -155,10 +155,13 @@ void drawPlay() {
     }
   }
 
+// Höj en counter ifall användaren har gissat fel, annars så sätts gessatRatt till false så att det funkar att loopa igenom blocket ovan igen. 
   if (gissatRatt == false) {
     felGissningar +=1;
+  }else{
+  gissatRatt = false;
   }
-
+  
   // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet. 
   int[] understrackKordinater = PositionOfLetter();
   for (int i=0; i < rVal.length(); i++) {
