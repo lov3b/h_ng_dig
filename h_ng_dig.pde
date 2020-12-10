@@ -30,9 +30,9 @@ final color turkos = color(0, 255, 255);
 final color svart = color(0);
 
 // Images
-PImage hill;
+// En array över de olika bilderna för olika stadier i användarens fel. Den sissta är en dummy bild.
+PImage[] kulle = new PImage[9];
 PImage sun;
-PImage sky;
 
 void setup() {
   size(800, 800);
@@ -54,10 +54,16 @@ void setup() {
   println(mittenBokstav);
 
   // Images
-  hill = loadImage("hill.png");
+  for (int i=0; i < 9; i++) {
+    kulle[i] = loadImage("Kulle"+i+".png");
+  }
   sun = loadImage("sun.png");
   sun.resize(120, 101);
-  sky = loadImage("sky.png");
+
+  //Resize
+  for (int i=0; i < 8; i++) {
+    kulle[i].resize(2554/2, 1216/2);
+  }
 }
 
 // Dela det valda ordet in till enstaka bokstaver i en array.
@@ -84,9 +90,13 @@ int[] PositionOfLetter() {
       kordinaterForUnderstrack[mittenBokstav+i] = mitten+(distansTot/2)+(distansTot*i);
     }
   }
-  //println(kordinaterForUnderstrack);
   return kordinaterForUnderstrack;
 }
+
+//void skrivutFails() {
+//  switch(felGissningar) {
+//    case 1
+//  }
 
 void draw() {
   // Ett switch statement som gör det möjligt med olika playstates. 
@@ -130,9 +140,12 @@ void drawStart() {
 }
 void drawPlay() {
   background(gron);
-  //image(sky,0,0);
-  image(hill, (width/2)-512/2, 200);
+  image(kulle[felGissningar], 80, 0);
   image(sun, width-120, 0);
+  if (felGissningar >= 7) {
+    state=gameoverState;
+  }
+
   noStroke();
   fill(rod);
   drawUnderstrack();
@@ -155,13 +168,14 @@ void drawPlay() {
     }
   }
 
-// Höj en counter ifall användaren har gissat fel, annars så sätts gessatRatt till false så att det funkar att loopa igenom blocket ovan igen. 
+  // Höj en counter ifall användaren har gissat fel, annars så sätts gessatRatt till false så att det funkar att loopa igenom blocket ovan igen. 
   if (gissatRatt == false) {
     felGissningar +=1;
-  }else{
-  gissatRatt = false;
+  } else {
+    gissatRatt = false;
   }
-  
+  println("felgissningar: "+ felGissningar);
+
   // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet. 
   int[] understrackKordinater = PositionOfLetter();
   for (int i=0; i < rVal.length(); i++) {
@@ -173,11 +187,14 @@ void drawPlay() {
 
 void drawGameover() {
   background(rod);
+  image(kulle[7], 80, 0);
+  fill(svart);
   textSize(20);
   textAlign(CENTER, CENTER);
   text("GAME OVER!\n"+
-    "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height/2);
+    "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height-height/3.5);
   if (mousePressed||keyPressed) {
+    felGissningar =0;
     state=playState;
   }
 }
@@ -189,6 +206,7 @@ void drawWin() {
   text("Du vann!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height/2);
   if (mousePressed||keyPressed) {
+    felGissningar =0;
     state=playState;
   }
 }
