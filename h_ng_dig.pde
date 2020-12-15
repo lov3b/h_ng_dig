@@ -1,6 +1,8 @@
 import javax.swing.JOptionPane;
 // Max 15 karaktärer i varje ord, annars blir understräcken för långa
 String[] ord = {"HUMAN", "TERMINATE", "EXECUTE", "REVOLUTION", "KILL"};
+
+// Det må vara fulkod, men det funkar och jag orkar inte fixa det.
 boolean[] harBlivitTaget = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
 String rVal;
 int rValInt;
@@ -37,7 +39,7 @@ PImage sun;
 void setup() {
   size(800, 800);
   surface.setTitle("Häng Dig!");
-  randomOMer();
+  randomOrd();
   rectMode(CENTER);
 
   // Images
@@ -59,8 +61,9 @@ String[] divideWord(String wordToDivide) {
   return ret;
 }
 
-void randomOMer() {
+void randomOrd() {
   // Bestäm ett slumpmässigt ord från ordarrayen
+  // rVal står för randomVal
   rValInt = int(random(0, antalOrd));
   rVal = ord[rValInt];
   println(rVal);
@@ -97,7 +100,7 @@ int[] PositionOfLetter() {
 }
 
 void draw() {
-  // Ett switch statement som gör det möjligt med olika playstates. 
+  // Ett switch statement som gör det möjligt med olika play-states. 
   switch(state) {
   case startState:
     drawStart();
@@ -145,6 +148,9 @@ void fixFalseArray() {
   }
 }
 
+// Ganska självförklarnade. Funktionen ritar ut början av drawPlay, alltså alla bilder, understräcken och bakgrunden.
+// Finns för att den körs i början av drawStart, drawGameover, och drawWin, eftersom det gick förbi ett problem med 
+// java.swing popup historien. 
 void ritaUtBorjan() {
   background(gron);
   image(kulle[felGissningar], 80, 0);
@@ -184,7 +190,7 @@ void drawPlay() {
   }
   println("felgissningar: "+ felGissningar);
 
-  // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet. 
+  // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet över understräcken. 
   int[] understrackKordinater = PositionOfLetter();
   for (int i=0; i < rVal.length(); i++) {
     if (harBlivitTaget[i]) {
@@ -192,7 +198,7 @@ void drawPlay() {
     }
   }
   gissatBra = true;
-  // Loopa igenom alla användarens svar och ifall inget är fel så sätts state till winState
+  // Loopa igenom alla användarens svar och ifall inget är fel så sätts state till winState i if satsen under.
   for (int i=0; i < rVal.length(); i++) {
     if (harBlivitTaget[i] == false) {
       gissatBra = false;
@@ -214,9 +220,11 @@ void drawGameover() {
   text("GAME OVER!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height-height/3.5);
   if (mousePressed||keyPressed) {
+    // Återställ viktiga variabler 
     felGissningar =0;
-    randomOMer();
+    randomOrd();
     fixFalseArray();
+    // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
     ritaUtBorjan();
     state=playState;
   }
@@ -229,9 +237,11 @@ void drawWin() {
   text("Du vann!\n"+
     "För att starta om tryck på valfri tangent", width/2, height/2);
   if (mousePressed||keyPressed) {
+    // Återställ viktiga variabler 
     felGissningar =0;
-    randomOMer();
+    randomOrd();
     fixFalseArray();
+    // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
     ritaUtBorjan();
     state=playState;
   }
