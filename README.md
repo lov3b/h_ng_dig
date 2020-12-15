@@ -1,3 +1,3 @@
 # h_ng_dig
 
-Just a hangmangame for a schoolproject written in processing *(java). Not done yet*
+Just a hangman-game for a schoolproject (with Swedish comments and ***mostly*** swedish variables) written in processing *(java). Not done yet*
