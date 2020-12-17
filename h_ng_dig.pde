@@ -60,10 +60,11 @@ String[] divideWord(String wordToDivide) {
 }
 
 void randomOrd() {
-  // Bestäm ett slumpmässigt ord från ordarrayen
-  // rVal står för randomVal
-  rValInt = int(random(0, ord.length));
-  rVal = ord[rValInt];
+  // Bestäm ett slumpmässigt ord genom ett externt API
+  String[] word = loadStrings("https://random-word-api.herokuapp.com/word?number=1");
+  word[0] = word[0].replace("[", "").replace("]", "").replace('"', '%').replace("%", "").toUpperCase();
+  rVal = word[0];
+
   println(rVal);
 
 
@@ -172,7 +173,7 @@ void keyPressed() {
         println(key);
         anvandarVal = str(key).toUpperCase().charAt(0);
 
-        String[] secretWordArray = divideWord(rVal);
+        String[] secretWordArray = rVal.split("");
         // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
         for (int i=0; i < rVal.length(); i++) {
           if (secretWordArray[i].charAt(0) == anvandarVal && harBlivitTaget[i] == false) {
@@ -222,7 +223,7 @@ void drawPlay() {
   }
   ritaUtBorjan();
 
-  String[] secretWordArray = divideWord(rVal);
+  String[] secretWordArray = rVal.split("");
   // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet över understräcken. 
   int[] understrackKordinater = PositionOfLetter();
   for (int i=0; i < rVal.length(); i++) {
@@ -240,13 +241,14 @@ void drawGameover() {
   textAlign(CENTER, CENTER);
   text("GAME OVER!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height-height/3.5);
-  //delay(1000);
+  textAlign(LEFT, LEFT);
+  text("Rätt ord: "+rVal, 50, 50);
+  textAlign(CENTER, CENTER);
   if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
-    // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
     state=playState;
   }
 }
@@ -257,12 +259,14 @@ void drawWin() {
   textAlign(CENTER, CENTER);
   text("Du vann!\n"+
     "För att starta om klicka på fönstret", width/2, height/2);
+  textAlign(LEFT, LEFT);
+  text("Rätt ord: "+rVal, 50, 50);
+  textAlign(CENTER, CENTER);
   if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
-    // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
     state=playState;
   }
 }
