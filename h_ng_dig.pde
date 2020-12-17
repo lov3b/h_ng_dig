@@ -35,6 +35,7 @@ final color svart = color(0);
 // En array över de olika bilderna för olika stadier i användarens fel.
 PImage[] kulle = new PImage[8];
 PImage sun;
+PImage pokal;
 
 // Sound
 SoundFile boing;
@@ -52,12 +53,14 @@ void setup() {
     kulle[i] = loadImage("Kulle"+i+".png");
   }
   sun = loadImage("sun.png");
-  sun.resize(120, 101 );
+  pokal = loadImage("goblet.png");
 
   //Resize
   for (int i=0; i < 8; i++) {
     kulle[i].resize(2554/2, 1216/2);
   }
+  sun.resize(120, 101 );
+  pokal.resize(520/3,601/3);
 }
 
 // Dela det valda ordet in till enstaka bokstaver i en array.
@@ -294,6 +297,7 @@ void drawWin() {
   textAlign(LEFT, LEFT);
   text("Rätt ord: "+storForstaBokstav(), 50, 50);
   textAlign(CENTER, CENTER);
+  image(pokal,(width/2)-520/6,150);
   skrivGissningar();
   if (mousePressed) {
     // Återställ viktiga variabler 
