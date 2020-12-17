@@ -10,20 +10,22 @@ final int antalOrd = 5;
 String anvandarValStr;
 char anvandarVal;
 boolean rValUdda;
-final int startState = 1;
-final int playState = 2;
-final int gameoverState = 3;
-final int winState = 4;
 int mittenBokstav;
 final int distansLangd = 30;
 final int distansMellanrum = 20;
 final int distansTot = distansLangd+distansMellanrum;
+
+//States
+final int startState = 1;
+final int playState = 2;
+final int gameoverState = 3;
+final int winState = 4;
 int state = startState;
 
 // Användarfel
 boolean gissatRatt=false;
 int felGissningar = 0;
-boolean gissatBra = false;
+//boolean gissatBra = false;
 
 //Färger
 final color rod = color(255, 0, 0);
@@ -65,6 +67,7 @@ void randomOrd() {
   // Bestäm ett slumpmässigt ord från ordarrayen
   // rVal står för randomVal
   rValInt = int(random(0, antalOrd));
+  rValInt = 2;
   rVal = ord[rValInt];
   println(rVal);
 
@@ -159,46 +162,54 @@ void ritaUtBorjan() {
   fill(rod);
   drawUnderstrack();
 }
+
+void keyPressed() {
+  if (state==playState) {
+    if (key != CODED) {
+      if ((key >= 'a' && key <= 'z')||(key >= 'A' && key <= 'Z')) {
+        println(key);
+        anvandarVal = str(key).toUpperCase().charAt(0);
+
+        String[] secretWordArray = divideWord(rVal);
+        // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
+        for (int i=0; i < rVal.length(); i++) {
+          if (secretWordArray[i].charAt(0) == anvandarVal && harBlivitTaget[i] == false) {
+            harBlivitTaget[i] = true;
+            gissatRatt=true;
+          }
+        }
+
+        // Höj en counter ifall användaren har gissat fel, annars så sätts gissatRatt till false så att det funkar att loopa igenom blocket ovan igen. 
+        if (gissatRatt == false) {
+          felGissningar +=1;
+        } else {
+          gissatRatt = false;
+        }
+        println("felgissningar: "+ felGissningar);
+
+        //gissatBra = true;
+        // Loopa igenom alla användarens svar och ifall inget är fel så sätts state till winState i if satsen nedan.
+        boolean gissatBra = true;
+        for (int i=0; i < rVal.length(); i++) {
+          if (harBlivitTaget[i] == false) {
+            gissatBra = false;
+          }
+        }
+        println("Before if "+state);
+        if (gissatBra) {
+          state=winState;
+        }
+        println("After if "+state);
+      }
+    }
+  }
+}
+
 void drawPlay() {
-  ritaUtBorjan();
   if (felGissningar >= 7) {
     state=gameoverState;
   }
-
-  //Hämta in det hemliga ordet som en array med en bokstav i varje plats.
-  String[] secretWordArray = divideWord(rVal);
-
-  // ANTECKNING TILL MIG SJÄLV
-  // Fixa så att det inte blir NullPointerException error när man trycker på cancel. 
-  // och StringIndexOutOfBoundsException (när man trycker på enter utan någon input)
-  anvandarValStr = JOptionPane.showInputDialog("Skriv en bokstav");
-  anvandarVal = anvandarValStr.toUpperCase().charAt(0);
-
-  // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
-  for (int i=0; i < rVal.length(); i++) {
-    if (secretWordArray[i].charAt(0) == anvandarVal && harBlivitTaget[i] == false) {
-      harBlivitTaget[i] = true;
-      gissatRatt=true;
-    }
-  }
-
-  // Höj en counter ifall användaren har gissat fel, annars så sätts gessatRatt till false så att det funkar att loopa igenom blocket ovan igen. 
-  if (gissatRatt == false) {
-    felGissningar +=1;
-  } else {
-    gissatRatt = false;
-  }
-  println("felgissningar: "+ felGissningar);
-
-  // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet över understräcken. 
-  int[] understrackKordinater = PositionOfLetter();
-  for (int i=0; i < rVal.length(); i++) {
-    if (harBlivitTaget[i]) {
-      text(""+secretWordArray[i], float(understrackKordinater[i]), (height/4.0)*3-height*0.02125);
-    }
-  }
-  gissatBra = true;
-  // Loopa igenom alla användarens svar och ifall inget är fel så sätts state till winState i if satsen under.
+  boolean gissatBra = true;
   for (int i=0; i < rVal.length(); i++) {
     if (harBlivitTaget[i] == false) {
       gissatBra = false;
@@ -209,6 +220,16 @@ void drawPlay() {
     state=winState;
   }
   println("After if "+state);
+  ritaUtBorjan();
+
+  String[] secretWordArray = divideWord(rVal);
+  // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet över understräcken. 
+  int[] understrackKordinater = PositionOfLetter();
+  for (int i=0; i < rVal.length(); i++) {
+    if (harBlivitTaget[i]) {
+      text(""+secretWordArray[i], float(understrackKordinater[i]), (height/4.0)*3-height*0.02125);
+    }
+  }
 }
 
 void drawGameover() {
@@ -219,13 +240,13 @@ void drawGameover() {
   textAlign(CENTER, CENTER);
   text("GAME OVER!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height-height/3.5);
-  if (mousePressed||keyPressed) {
+  //delay(1000);
+  if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
     // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
-    ritaUtBorjan();
     state=playState;
   }
 }
@@ -235,14 +256,13 @@ void drawWin() {
   textSize(20);
   textAlign(CENTER, CENTER);
   text("Du vann!\n"+
-    "För att starta om tryck på valfri tangent", width/2, height/2);
-  if (mousePressed||keyPressed) {
+    "För att starta om klicka på fönstret", width/2, height/2);
+  if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
     // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
-    ritaUtBorjan();
     state=playState;
   }
 }
