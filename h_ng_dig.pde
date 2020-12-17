@@ -1,8 +1,8 @@
 import javax.swing.JOptionPane;
 import processing.sound.*;
 // Max 15 karaktärer i varje ord, annars blir understräcken för långa
-String[] ord = {"HUMAN", "TERMINATE", "EXECUTE", "REVOLUTION", "KILL"};
 boolean[] harBlivitTaget = new boolean[1];
+char[] gissadeBokstaver = new char[0];
 String rVal;
 int rValInt;
 String anvandarValStr;
@@ -23,6 +23,7 @@ int state = startState;
 // Användarfel
 boolean gissatRatt=false;
 int felGissningar = 0;
+int antalGissningar = 0;
 
 //Färger
 final color rod = color(255, 0, 0);
@@ -70,9 +71,7 @@ void randomOrd() {
   String[] word = loadStrings("https://random-word-api.herokuapp.com/word?number=1");
   word[0] = word[0].replace("[", "").replace("]", "").replace('"', '%').replace("%", "").toUpperCase();
   rVal = word[0];
-
   println(rVal);
-
 
   // Kolla ifall ordet är udda eller jämnt antal karaktärer
   if (rVal.length() % 2 == 0) {
@@ -145,7 +144,6 @@ void drawStart() {
     "Starta genom att klicka på fönstret eller tryck på valfri tangent", width/2, height/2);
   // Byt playstate ifall en knapp trycks ner
   if (mousePressed||keyPressed) {
-    ritaUtBorjan();
     state=playState;
   }
 }
@@ -160,24 +158,31 @@ void fixFalseArray() {
   }
 }
 
-// Ganska självförklarnade. Funktionen ritar ut början av drawPlay, alltså alla bilder, understräcken och bakgrunden.
-// Finns för att den körs i början av drawStart, drawGameover, och drawWin, eftersom det gick förbi ett problem med 
-// java.swing popup historien. 
-void ritaUtBorjan() {
-  background(gron);
-  image(kulle[felGissningar], 80, 0);
-  image(sun, width-120, 0);
-  noStroke();
-  fill(rod);
-  drawUnderstrack();
+// Loopa igenom det hemliga ordet, skapa en array med allting för att därefter ändra om allting till lowercase förutom den första bokstaven
+// Därefter kommer den sista forloopen att bygga en sträng utifrån arrayen
+String storForstaBokstav() {
+  char[] rValStorBokstavArray = new char[rVal.length()];
+  rValStorBokstavArray[0] = rVal.toUpperCase().charAt(0);
+  String rValUtskriv = "";
+
+  for (int i=1; i < rVal.length(); i++) {
+    rValStorBokstavArray[i] = rVal.toLowerCase().charAt(i);
+  }
+  for (int i=0; i<rVal.length(); i++) {
+    rValUtskriv =rValUtskriv + rValStorBokstavArray[i];
+  }
+  return rValUtskriv;
 }
 
 void keyPressed() {
   if (state==playState) {
     if (key != CODED) {
       if ((key >= 'a' && key <= 'z')||(key >= 'A' && key <= 'Z')) {
-        println(key);
         anvandarVal = str(key).toUpperCase().charAt(0);
+        antalGissningar++;
+        gissadeBokstaver = expand(gissadeBokstaver, antalGissningar);
+        gissadeBokstaver[antalGissningar-1] = anvandarVal;
+        println(gissadeBokstaver);
 
         String[] secretWordArray = rVal.split("");
         // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
@@ -195,9 +200,7 @@ void keyPressed() {
         } else {
           gissatRatt = false;
         }
-        println("felgissningar: "+ felGissningar);
 
-        //gissatBra = true;
         // Loopa igenom alla användarens svar och ifall inget är fel så sätts state till winState i if satsen nedan.
         boolean gissatBra = true;
         for (int i=0; i < rVal.length(); i++) {
@@ -226,7 +229,12 @@ void drawPlay() {
   if (gissatBra) {
     state=winState;
   }
-  ritaUtBorjan();
+  background(gron);
+  image(kulle[felGissningar], 80, 0);
+  image(sun, width-120, 0);
+  noStroke();
+  fill(rod);
+  drawUnderstrack();
 
   String[] secretWordArray = rVal.split("");
   // Stycket kod skriver ut de bokstäverna som användaren har gissat rätt i det hemliga ordet över understräcken. 
@@ -236,6 +244,19 @@ void drawPlay() {
       text(""+secretWordArray[i], float(understrackKordinater[i]), (height/4.0)*3-height*0.02125);
     }
   }
+  skrivGissningar();
+}
+
+// Skriv ut användarens gissningar
+// Skapa en sträng som innehåller samma sak som arrayen gissadeBokstaver, för att sedan skriva ut den.
+void skrivGissningar() {
+  String gissadeBokstaverUtskriv = "";
+  for (int i=0; i< gissadeBokstaver.length; i++) {
+    gissadeBokstaverUtskriv =gissadeBokstaverUtskriv + gissadeBokstaver[i];
+  }
+  textAlign(LEFT, LEFT);
+  text("Du har gissat på: " + gissadeBokstaverUtskriv, 50, (height/8)*7);
+  textAlign(CENTER, CENTER);
 }
 
 void drawGameover() {
@@ -247,8 +268,9 @@ void drawGameover() {
   text("GAME OVER!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height-height/3.5);
   textAlign(LEFT, LEFT);
-  text("Rätt ord: "+rVal, 50, 50);
+  text("Rätt ord: "+storForstaBokstav(), 50, 50);
   textAlign(CENTER, CENTER);
+  skrivGissningar();
   if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
@@ -260,13 +282,15 @@ void drawGameover() {
 
 void drawWin() {
   background(turkos);
+  fill(svart);
   textSize(20);
   textAlign(CENTER, CENTER);
   text("Du vann!\n"+
     "För att starta om klicka på fönstret", width/2, height/2);
   textAlign(LEFT, LEFT);
-  text("Rätt ord: "+rVal, 50, 50);
+  text("Rätt ord: "+storForstaBokstav(), 50, 50);
   textAlign(CENTER, CENTER);
+  skrivGissningar();
   if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
