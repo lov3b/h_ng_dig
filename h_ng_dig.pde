@@ -1,12 +1,9 @@
 import javax.swing.JOptionPane;
 // Max 15 karaktärer i varje ord, annars blir understräcken för långa
 String[] ord = {"HUMAN", "TERMINATE", "EXECUTE", "REVOLUTION", "KILL"};
-
-// Det må vara fulkod, men det funkar och jag orkar inte fixa det.
-boolean[] harBlivitTaget = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
+boolean[] harBlivitTaget = new boolean[1];
 String rVal;
 int rValInt;
-final int antalOrd = 5;
 String anvandarValStr;
 char anvandarVal;
 boolean rValUdda;
@@ -25,7 +22,6 @@ int state = startState;
 // Användarfel
 boolean gissatRatt=false;
 int felGissningar = 0;
-//boolean gissatBra = false;
 
 //Färger
 final color rod = color(255, 0, 0);
@@ -34,16 +30,16 @@ final color bla = color(0, 0, 255);
 final color turkos = color(0, 255, 255);
 final color svart = color(0);
 
-// En array över de olika bilderna för olika stadier i användarens fel. Den sissta är en dummy bild.
+// En array över de olika bilderna för olika stadier i användarens fel.
 PImage[] kulle = new PImage[8];
 PImage sun;
 
+
 void setup() {
   size(800, 800);
-  surface.setTitle("Häng Dig!");
+  surface.setTitle("Häng Dig! https://youtu.be/dQw4w9WgXcQ");
   randomOrd();
   rectMode(CENTER);
-
   // Images
   for (int i=0; i < 8; i++) {
     kulle[i] = loadImage("Kulle"+i+".png");
@@ -66,7 +62,7 @@ String[] divideWord(String wordToDivide) {
 void randomOrd() {
   // Bestäm ett slumpmässigt ord från ordarrayen
   // rVal står för randomVal
-  rValInt = int(random(0, antalOrd));
+  rValInt = int(random(0, ord.length));
   rVal = ord[rValInt];
   println(rVal);
 
@@ -78,6 +74,11 @@ void randomOrd() {
   } else {
     rValUdda = true;
     mittenBokstav = int(rVal.length()/2)+1;
+  }
+
+  harBlivitTaget = expand(harBlivitTaget, rVal.length());
+  for (int i=0; i < rVal.length(); i++) {
+    harBlivitTaget[i]=false;
   }
 }
 
@@ -145,8 +146,10 @@ void drawStart() {
 // Jag skrev en funktion för att ändra harBlivitTaget till helt false efter en omgång
 // Kändes snyggare att lägga en linje kod i drawWin och drawGameover än 5
 void fixFalseArray() {
-  for (int i=0; i < 15; i++) {
-    harBlivitTaget[i] =false;
+  for (int i=0; i < rVal.length(); i++) {
+    if (harBlivitTaget[i] == true) {
+      harBlivitTaget[i] =false;
+    }
   }
 }
 
@@ -214,11 +217,9 @@ void drawPlay() {
       gissatBra = false;
     }
   }
-  println("Before if "+state);
   if (gissatBra) {
     state=winState;
   }
-  println("After if "+state);
   ritaUtBorjan();
 
   String[] secretWordArray = divideWord(rVal);
