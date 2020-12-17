@@ -35,7 +35,7 @@ final color turkos = color(0, 255, 255);
 final color svart = color(0);
 
 // En array över de olika bilderna för olika stadier i användarens fel. Den sissta är en dummy bild.
-PImage[] kulle = new PImage[9];
+PImage[] kulle = new PImage[8];
 PImage sun;
 
 void setup() {
@@ -45,11 +45,11 @@ void setup() {
   rectMode(CENTER);
 
   // Images
-  for (int i=0; i < 9; i++) {
+  for (int i=0; i < 8; i++) {
     kulle[i] = loadImage("Kulle"+i+".png");
   }
   sun = loadImage("sun.png");
-  sun.resize(120, 101);
+  sun.resize(120, 101 );
 
   //Resize
   for (int i=0; i < 8; i++) {
