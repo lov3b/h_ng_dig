@@ -60,7 +60,7 @@ void setup() {
     kulle[i].resize(2554/2, 1216/2);
   }
   sun.resize(120, 101 );
-  pokal.resize(520/3,601/3);
+  pokal.resize(520/3, 601/3);
 }
 
 // Dela det valda ordet in till enstaka bokstaver i en array.
@@ -144,7 +144,7 @@ void drawStart() {
   background(0);
   fill(gron);
   text("Välkommen till 'Häng Dig'\nGissa på en bokstav i popuprutan\n"+
-    "Starta genom att klicka på fönstret eller tryck på valfri tangent", width/2, height/2);
+    "Starta genom att klicka på fönstret", width/2, height/2);
   // Byt playstate ifall en knapp trycks ner
   if (mousePressed||keyPressed) {
     state=playState;
@@ -283,7 +283,9 @@ void drawGameover() {
     felGissningar =0;
     randomOrd();
     fixFalseArray();
-    state=playState;
+    gissadeBokstaver = new char[0];
+    antalGissningar=0;
+      state=playState;
   }
 }
 
@@ -297,13 +299,15 @@ void drawWin() {
   textAlign(LEFT, LEFT);
   text("Rätt ord: "+storForstaBokstav(), 50, 50);
   textAlign(CENTER, CENTER);
-  image(pokal,(width/2)-520/6,150);
+  image(pokal, (width/2)-520/6, 150);
   skrivGissningar();
   if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
+    gissadeBokstaver = new char[0];
+    antalGissningar=0;
     state=playState;
   }
 }
