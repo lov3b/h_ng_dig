@@ -43,7 +43,6 @@ void setup() {
   surface.setTitle("Häng Dig!");
   randomOrd();
   rectMode(CENTER);
-  frameRate(4);
 
   // Images
   for (int i=0; i < 9; i++) {
@@ -242,13 +241,12 @@ void drawGameover() {
   text("GAME OVER!\n"+
     "Starta om genom att klicka på fönstret, eller tryck på valfri tangent", width/2, height-height/3.5);
   //delay(1000);
-  if (mousePressed||keyPressed) {
+  if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
     // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
-    //ritaUtBorjan();
     state=playState;
   }
 }
@@ -258,14 +256,13 @@ void drawWin() {
   textSize(20);
   textAlign(CENTER, CENTER);
   text("Du vann!\n"+
-    "För att starta om tryck på valfri tangent", width/2, height/2);
-  if (mousePressed||keyPressed) {
+    "För att starta om klicka på fönstret", width/2, height/2);
+  if (mousePressed) {
     // Återställ viktiga variabler 
     felGissningar =0;
     randomOrd();
     fixFalseArray();
     // Rita ut början av drawPlay för att swing popupen inte ska hindra understräcken från att visas.
-    //ritaUtBorjan();
     state=playState;
   }
 }
