@@ -178,11 +178,15 @@ void keyPressed() {
   if (state==playState) {
     if (key != CODED) {
       if ((key >= 'a' && key <= 'z')||(key >= 'A' && key <= 'Z')) {
+
+        // Blocket har en counter för att hålla koll på hur många gissningar användaren har gjort
+        // Kommer att expandera en array som innehåller alla gissningar för att sedan lägga in nästa gissning
+        // Därefter kommer allting att sorteras i bokstavsordning. 
         anvandarVal = str(key).toUpperCase().charAt(0);
         antalGissningar++;
         gissadeBokstaver = expand(gissadeBokstaver, antalGissningar);
         gissadeBokstaver[antalGissningar-1] = anvandarVal;
-        println(gissadeBokstaver);
+        gissadeBokstaver = sort(gissadeBokstaver);
 
         String[] secretWordArray = rVal.split("");
         // Loopa igenom alla bokstäver i det hemliga ordet och ändra harBlivitTaget till true ifall användaren gissade rätt. 
