@@ -1,4 +1,5 @@
 import javax.swing.JOptionPane;
+import processing.sound.*;
 // Max 15 karaktärer i varje ord, annars blir understräcken för långa
 String[] ord = {"HUMAN", "TERMINATE", "EXECUTE", "REVOLUTION", "KILL"};
 boolean[] harBlivitTaget = new boolean[1];
@@ -34,12 +35,17 @@ final color svart = color(0);
 PImage[] kulle = new PImage[8];
 PImage sun;
 
+// Sound
+SoundFile boing;
 
 void setup() {
   size(800, 800);
   surface.setTitle("Häng Dig! https://youtu.be/dQw4w9WgXcQ");
   randomOrd();
   rectMode(CENTER);
+  // Tack Elias för ljudet!
+  boing = new SoundFile(this, "boing.mp3");
+
   // Images
   for (int i=0; i < 8; i++) {
     kulle[i] = loadImage("Kulle"+i+".png");
@@ -185,6 +191,7 @@ void keyPressed() {
         // Höj en counter ifall användaren har gissat fel, annars så sätts gissatRatt till false så att det funkar att loopa igenom blocket ovan igen. 
         if (gissatRatt == false) {
           felGissningar +=1;
+          boing.play();
         } else {
           gissatRatt = false;
         }
@@ -198,11 +205,9 @@ void keyPressed() {
             gissatBra = false;
           }
         }
-        println("Before if "+state);
         if (gissatBra) {
           state=winState;
         }
-        println("After if "+state);
       }
     }
   }
