@@ -67,7 +67,6 @@ void randomOrd() {
   // Bestäm ett slumpmässigt ord från ordarrayen
   // rVal står för randomVal
   rValInt = int(random(0, antalOrd));
-  rValInt = 2;
   rVal = ord[rValInt];
   println(rVal);
 
